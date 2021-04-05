@@ -1,0 +1,25 @@
+version: '3.7'
+
+services:
+  web:
+    build: .
+    # command: python manage.py runserver 0.0.0.0:8000
+    command: gunicorn dapp.wsgi:application --bind 0.0.0.0:8000
+    volumes:
+      - static_volume:/home/appuser/django_app/static
+      - .:/usr/src/app/
+    ports:
+      - 8000
+    env_file:
+      - ./.env.dev
+  nginx:
+    build: ./nginx
+    volumes:
+      - static_volume:/home/appuser/django_app/static
+    ports:
+      - 1337:80
+    depends_on:
+      - web
+
+volumes: 
+  static_volume:
